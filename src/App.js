@@ -1,19 +1,39 @@
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense, useEffect, useContext } from 'react'
 import { HashRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { AuthProvider, AuthContext  } from './lib/AuthContext'
+
+
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
+
+// We use those styles to show code examples, you should remove them in your application.
 import './scss/examples.scss'
-import { useUser } from './lib/AuthContext' // Asegúrate de crear este contexto
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
-
 // Pages
 const Login = React.lazy(() => import('./views/auth/login'))
 const Register = React.lazy(() => import('./views/auth/register'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useContext(AuthContext)
+
+  if (loading) {
+    return (
+      <div className="pt-3 text-center">
+        <CSpinner color="primary" variant="grow" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return children
+}
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
@@ -33,85 +53,43 @@ const App = () => {
     setColorMode(storedTheme)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Componente para proteger rutas
-  const ProtectedRoute = ({ children }) => {
-    const { user, loading } = useUser()
-    
-    if (loading) {
-      return (
-        <div className="pt-3 text-center">
-          <CSpinner color="primary" variant="grow" />
-        </div>
-      )
-    }
-    
-    if (!user) {
-      return <Navigate to="/login" replace />
-    }
-    
-    return children
-  }
-
-  // Componente para rutas de invitados (login/register)
-  const GuestRoute = ({ children }) => {
-    const { user, loading } = useUser()
-    
-    if (loading) {
-      return (
-        <div className="pt-3 text-center">
-          <CSpinner color="primary" variant="grow" />
-        </div>
-      )
-    }
-    
-    if (user) {
-      return <Navigate to="/" replace />
-    }
-    
-    return children
-  }
-
   return (
-    <HashRouter>
-      <Suspense
-        fallback={
-          <div className="pt-3 text-center">
-            <CSpinner color="primary" variant="grow" />
-          </div>
-        }
-      >
-        <Routes>
-          <Route
-            exact
-            path="/login"
-            element={
-              <GuestRoute>
-                <Login />
-              </GuestRoute>
-            }
-          />
-          <Route
-            exact
-            path="/register"
-            element={
-              <GuestRoute>
-                <Register />
-              </GuestRoute>
-            }
-          />
-          <Route exact path="/404" element={<Page404 />} />
-          <Route exact path="/500" element={<Page500 />} />
-          <Route
-            path="*"
-            element={
-              <ProtectedRoute>
-                <DefaultLayout />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Suspense>
-    </HashRouter>
+    <AuthProvider>
+      <HashRouter>
+        <Suspense
+          fallback={
+            <div className="pt-3 text-center">
+              <CSpinner color="primary" variant="grow" />
+            </div>
+          }
+        >
+          <Routes>
+            <Route exact path="/login" name="Login Page" element={<Login />} />
+            <Route exact path="/register" name="Register Page" element={<Register />} />
+            <Route exact path="/404" name="Page 404" element={<Page404 />} />
+            <Route exact path="/500" name="Page 500" element={<Page500 />} />
+            <Route
+              path="*"
+              name="Home"
+              element={
+                <ProtectedRoute>
+                  <DefaultLayout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="*"
+              name="Home"
+              element={
+                <ProtectedRoute>
+                  <DefaultLayout />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Suspense>
+      </HashRouter>
+    </AuthProvider>
   )
 }
 
