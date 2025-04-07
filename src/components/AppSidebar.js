@@ -36,9 +36,20 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
-      <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/">
-          <CImage src={logo} height={32} width={80} fluid={true} />
+      <CSidebarHeader className="border-bottom" style={{
+          display: 'flex',
+          justifyContent: 'center', // Centrar horizontalmente todo el contenido
+          alignItems: 'center', // Centrar verticalmente
+          position: 'relative', // Para posicionar el CCloseButton
+          padding: '10px 0', // Ajustar el padding para más espacio
+        }}>
+        <CSidebarBrand to="/" style={{
+            display: 'flex',
+            justifyContent: 'center', // Centrar horizontalmente
+            alignItems: 'center', // Centrar verticalmente
+            width: '100%', // Asegurarse de que ocupe todo el ancho disponible
+          }}>
+          <CImage src={logo} height={120} width={120} fluid={true} style={{ objectFit: 'contain'}}/>
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
