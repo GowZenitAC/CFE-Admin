@@ -149,11 +149,11 @@ function Reports() {
                 className="w-100"
               />
             </CCol>
-            <CCol xs={2} className="d-flex align-items-end">
+            {/* <CCol xs={2} className="d-flex align-items-end">
               <CButton color="success" className="w-100">
                 Agregar
               </CButton>
-            </CCol>
+            </CCol> */}
           </CRow>
           <ReusableCoreUITable data={filteredData} columns={columns} />
         </CCardBody>
