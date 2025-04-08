@@ -109,7 +109,7 @@ const VehicleMileageList = () => {
                 {alerts.map((alert) => (
                   <CAlert key={alert.placa} color="warning" className="d-flex align-items-center">
                     <CIcon icon={cilWarning} className="me-2" />
-                    El vehículo con placa <strong>{alert.placa}</strong> ha recorrido{' '}
+                    El vehículo con placa: <strong>{alert.placa}</strong> ha recorrido{' '}
                     <strong>{alert.kilometros.toLocaleString()} km</strong> y necesita mantenimiento.
                   </CAlert>
                 ))}
