@@ -66,6 +66,8 @@ export const fetchReports = async () => {
         hora_inicio,
         hora_finalizacion,
         observaciones,
+        kilometraje_inicio,
+        kilometraje_final,
         profiles:profiles!user_id (username)
       `)
       .eq('id', id)

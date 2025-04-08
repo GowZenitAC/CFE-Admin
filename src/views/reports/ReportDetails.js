@@ -9,35 +9,32 @@ import {
   CButton,
   CTable,
   CTableHead,
-  CSpinner,
+  CTableBody,
   CTableRow,
   CTableHeaderCell,
-  CTableBody,
   CTableDataCell,
+  CSpinner,
 } from '@coreui/react';
 import { format } from '@formkit/tempo';
-import { fetchDetailInspection } from '../../lib/InspectionsService'; // Ajusta la ruta
+import { fetchDetailInspection, fetchSignature } from '../../lib/InspectionsService'; // Ajusta la ruta
 import CIcon from '@coreui/icons-react';
 import { cilInfo, cilCarAlt, cilLightbulb, cilDrop, cilArrowLeft, cilPenNib } from '@coreui/icons';
-import { fetchSignature } from '../../lib/InspectionsService';
 
 const ReportDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
-  const [signatureUrl, setSignatureUrl ] = useState(null); // Estado para la URL de la firma
+  const [signatureUrl, setSignatureUrl] = useState(null); // Estado para la URL de la firma
 
   useEffect(() => {
     const loadReport = async () => {
       try {
         const data = await fetchDetailInspection(id);
-
         setReport(data); // Ajustado para asignar directamente los datos
         if (data.user_signature_id) {
           const signatureData = await fetchSignature(data.user_signature_id);
           console.log(signatureData.signature_url);
           setSignatureUrl(signatureData.signature_url); // Asignar la URL de la firma al estado
-
         }
       } catch (error) {
         console.error('Error loading report:', error);
@@ -53,6 +50,11 @@ const ReportDetails = () => {
       </div>
     );
   }
+
+  // Calcular los kilómetros recorridos en este reporte
+  const kilometrosRecorridos = report.kilometraje_final && report.kilometraje_inicio
+    ? (report.kilometraje_final - report.kilometraje_inicio).toLocaleString()
+    : 'N/A';
 
   return (
     <CRow>
@@ -95,8 +97,16 @@ const ReportDetails = () => {
                 <CTableRow>
                   <CTableHeaderCell>Placas Vehículo</CTableHeaderCell>
                   <CTableDataCell>{report.placas_vehiculo}</CTableDataCell>
-                  <CTableHeaderCell colSpan="3">Observaciones</CTableHeaderCell>
-                  <CTableDataCell colSpan="3">{report.observaciones || 'N/A'}</CTableDataCell>
+                  <CTableHeaderCell>Kilometraje Inicio</CTableHeaderCell>
+                  <CTableDataCell>{report.kilometraje_inicio?.toLocaleString() || 'N/A'}</CTableDataCell>
+                  <CTableHeaderCell>Kilometraje Fin</CTableHeaderCell>
+                  <CTableDataCell>{report.kilometraje_final?.toLocaleString() || 'N/A'}</CTableDataCell>
+                </CTableRow>
+                <CTableRow>
+                  <CTableHeaderCell>Kilómetros Recorridos</CTableHeaderCell>
+                  <CTableDataCell>{kilometrosRecorridos}</CTableDataCell>
+                  <CTableHeaderCell colSpan="2">Observaciones</CTableHeaderCell>
+                  <CTableDataCell colSpan="2">{report.observaciones || 'N/A'}</CTableDataCell>
                 </CTableRow>
               </CTableBody>
             </CTable>
@@ -150,7 +160,7 @@ const ReportDetails = () => {
                   <CTableHeaderCell>Cinturón Seguridad</CTableHeaderCell>
                   <CTableDataCell>{report.cinturon_seguridad}</CTableDataCell>
                   <CTableHeaderCell>Volante</CTableHeaderCell>
-                  <CTableDataCell>{report.volante}</CTableDataCell>
+                  <CTableDataCell>{report.volánsito}</CTableDataCell>
                 </CTableRow>
               </CTableBody>
             </CTable>
